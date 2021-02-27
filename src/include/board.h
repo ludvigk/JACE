@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <string>
 
+void hello();
+
 typedef uint64_t bitboard_t;
 typedef uint64_t zh_t;
 
