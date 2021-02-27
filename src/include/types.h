@@ -20,10 +20,10 @@ enum Color {
     BLACK
 };
 
-Color operator!(Color& cl) { cl == WHITE ? BLACK : WHITE; }
+Color operator!(Color& cl);
 
-int rank(square_t sq) { return sq / 8; }
-int file(square_t sq) { return sq % 8; }
-square_t square(int rank, int file) { return rank * 8 + file; }
+int rank(square_t sq);
+int file(square_t sq);
+square_t square(int rank, int file);
 
 #endif //JACE_TYPES_H

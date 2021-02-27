@@ -14,19 +14,41 @@ bitboard_t PawnM[2][64];
 bitboard_t RookA[64][1 << 12];
 bitboard_t BishopA[64][1 << 9];
 
+bitboard_t Up(const bitboard_t s) { return s << 8; }
+
+bitboard_t Down(const bitboard_t s) { return s >> 8; }
+
+bitboard_t Left(const bitboard_t s) { return (s & ~FileAM) >> 1; }
+
+bitboard_t Right(const bitboard_t s) { return (s & ~FileHM) << 1; }
+
+bitboard_t UpLeft(const bitboard_t s) { return Up(Left(s)); }
+
+bitboard_t UpRight(const bitboard_t s) { return Up(Right(s)); }
+
+bitboard_t DownLeft(const bitboard_t s) { return Down(Left(s)); }
+
+bitboard_t DownRight(const bitboard_t s) { return Down(Right(s)); }
+
+bitboard_t Forward(const bitboard_t s, Color cl) { return cl == WHITE ? Up(s) : Down(s); }
+
+bitboard_t Backward(const bitboard_t s, Color cl) { return Forward(s, !cl); }
+
+Color operator!(Color& cl) { return cl == WHITE ? BLACK : WHITE; }
+
 void Masks::init() {
     for (square_t sq = A1; sq <= H8; sq++) { SquareM[sq] = 1ULL << sq; }
     for (square_t sq = A1; sq <= H8; sq++) {
         auto rank_ = rank(sq);
         auto file_ = file(sq);
         bitboard_t sqBB = SquareM[sq];
-        KnightM[sq] = Up(UpRight(sqBB)      | UpLeft(sqBB))   |
-                      Down(DownRight(sqBB)  | DownLeft(sqBB)) |
-                      Left(DownLeft(sqBB)   | UpLeft(sqBB))   |
+        KnightM[sq] = Up(UpRight(sqBB) | UpLeft(sqBB)) |
+                      Down(DownRight(sqBB) | DownLeft(sqBB)) |
+                      Left(DownLeft(sqBB) | UpLeft(sqBB)) |
                       Right(DownRight(sqBB) | UpRight(sqBB));
-        KingM[sq] = Up(sqBB)        | Down(sqBB)    |
-                    Left(sqBB)      | Right(sqBB)   |
-                    UpLeft(sqBB)    | UpRight(sqBB) |
+        KingM[sq] = Up(sqBB) | Down(sqBB) |
+                    Left(sqBB) | Right(sqBB) |
+                    UpLeft(sqBB) | UpRight(sqBB) |
                     DownRight(sqBB) | DownLeft(sqBB);
         PawnA[WHITE][sq] = Up(Left(sqBB) | Right(sqBB));
         PawnA[BLACK][sq] = Down(Left(sqBB) | Right(sqBB));
@@ -34,18 +56,18 @@ void Masks::init() {
         PawnM[BLACK][sq] = Down(sqBB) | Down(Down(sqBB & Rank7M));
 
         bitboard_t edge = ((Rank1M | Rank8M) & ~RankMM[rank_]) |
-                        ((FileAM | FileHM) & ~FileMM[file_]);
+                          ((FileAM | FileHM) & ~FileMM[file_]);
 
         RookM[sq] = sliding_rook_attacks(sq, 0ULL) & ~edge;
         BishopM[sq] = sliding_bishop_attacks(sq, 0ULL) & ~edge;
 
         uint8_t nsr = __builtin_popcountll(RookM[sq]);
-        for (int i = 0; i < (1ULL << nsr); i++){
+        for (int i = 0; i < (1ULL << nsr); i++) {
             bitboard_t occ = pdep(i, RookM[sq]);
             RookA[sq][i] = sliding_rook_attacks(sq, occ);
         }
         uint8_t nsb = __builtin_popcountll(BishopM[sq]);
-        for (int i = 0; i < (1ULL << nsb); i++){
+        for (int i = 0; i < (1ULL << nsb); i++) {
             bitboard_t occ = pdep(i, BishopM[sq]);
             BishopA[sq][i] = sliding_bishop_attacks(sq, occ);
         }
