@@ -1,7 +1,6 @@
-#include "board.h"
+#include "uci.h"
 
 
 int main() {
-    hello();
-    return 0;
+    return uci_loop(std::cin, std::cout);
 }
