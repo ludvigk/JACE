@@ -36,6 +36,8 @@ public:
 
     Board(std::string fen);
 
+    void print();
+
     void legal_moves(Move *move_list);
 
     void pseudo_legal_moves(Move *move_list);

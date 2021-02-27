@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
 #include <bits/stdc++.h>
-#include <thread> 
+#include <thread>
 #include <assert.h>
 
+#include "board.h"
 #include "uci.h"
 
-using namespace std; 
+using namespace std;
 
 
 void do_work(){
@@ -19,10 +20,11 @@ int uci_loop(istream &input_stream, ostream &output_stream){
     string word;
     thread engine_thread;
     bool engine_started = false;
+    Board board;
 
     while (true) {
         getline(input_stream, line);
-        istringstream ss(line); 
+        istringstream ss(line);
 
         ss >> word;
         if (word == "uci"){
@@ -47,10 +49,32 @@ int uci_loop(istream &input_stream, ostream &output_stream){
             // TODO
         }
         else if (word == "position"){
-            // TODO
+            ss >> word;
+            if (word == "startpos"){
+                board = Board();
+            } else {
+                // assume FEN
+                ostringstream fen_ss;
+
+                fen_ss << word;
+                for (int i = 0; i < 5; i++) {
+                    string tmp;
+                    ss >> tmp;
+                    fen_ss << " " << tmp;
+                }
+
+                board = Board(fen_ss.str());
+            }
+
+            ss >> word;
+            assert(word == "moves");
+            while(ss >> word) {
+                // TODO apply moves
+            }
+            board.print();
         }
         else if (word == "go"){
-            assert(!engine_started); 
+            assert(!engine_started);
             engine_thread = thread{do_work};
             engine_started = true;
             // TODO
