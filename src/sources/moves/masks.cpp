@@ -14,9 +14,9 @@ bitboard_t PawnM[2][64];
 bitboard_t RookA[64][1 << 12];
 bitboard_t BishopA[64][1 << 9];
 
-bitboard_t Up(const bitboard_t s) { return s << 8; }
+bitboard_t Up(const bitboard_t s) { return (s & ~Rank8M) << 8; }
 
-bitboard_t Down(const bitboard_t s) { return s >> 8; }
+bitboard_t Down(const bitboard_t s) { return (s & ~Rank1M) >> 8; }
 
 bitboard_t Left(const bitboard_t s) { return (s & ~FileAM) >> 1; }
 

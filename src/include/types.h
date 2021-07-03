@@ -25,5 +25,6 @@ Color operator!(Color& cl);
 int rank(square_t sq);
 int file(square_t sq);
 square_t square(int rank, int file);
+bitboard_t bb(square_t sq);
 
 #endif //JACE_TYPES_H

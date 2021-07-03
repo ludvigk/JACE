@@ -2,6 +2,8 @@
 // Created by ludvig on 27.02.2021.
 //
 
+#include <iostream>
+#include <bitset>
 #include "board.h"
 
 bool Board::is_attacked(square_t sq){
@@ -13,7 +15,12 @@ bool Board::is_attacked(square_t sq){
     return false;
 }
 
-void Board::pseudo_legal_moves(Move *move_list) {
+bool Board::is_in_check(Color color){
+    square_t sq = __builtin_ctzl(pieceBB_[color] & pieceBB_[nKing]);
+    return is_attacked(sq);
+}
+
+int Board::pseudo_legal_moves(Move *move_list) {
     int move_idx = 0;
     for (square_t sq = A1; sq <= H8; sq++) {
         bitboard_t sqBB = 1ULL << sq;
@@ -27,7 +34,7 @@ void Board::pseudo_legal_moves(Move *move_list) {
             square_t to_sq = 0;
             while (moves != 0) {
                 auto t = moves & -moves;
-                to_sq += __builtin_ctzl(moves);
+                to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
                 move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
                 moves ^= t;
@@ -62,7 +69,7 @@ void Board::pseudo_legal_moves(Move *move_list) {
             square_t to_sq = 0;
             while (moves != 0) {
                 auto t = moves & -moves;
-                to_sq += __builtin_ctzl(moves);
+                to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
                 move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
                 moves ^= t;
@@ -72,11 +79,11 @@ void Board::pseudo_legal_moves(Move *move_list) {
 
         // Pawns
         if (sqBB & this->get_pawns(color_)) {
-            auto moves = (PawnM[color_][sq] | PawnA[color_][sq]) & ~this->get_pieces(color_);
+            auto moves = (PawnM[color_][sq] | PawnA[color_][sq] & this->get_pieces(!color_)) & ~this->get_pieces(color_);
             square_t to_sq = 0;
             while (moves != 0) {
-                auto t = moves & -moves;
-                to_sq += __builtin_ctzl(moves);
+                bitboard_t t = moves & -moves;
+                to_sq = __builtin_ctzl(moves);
                 moves ^= t;
 
                 bitboard_t to_sqBB = 1ULL << to_sq;
@@ -103,7 +110,7 @@ void Board::pseudo_legal_moves(Move *move_list) {
             square_t to_sq = 0;
             while (moves != 0) {
                 auto t = moves & -moves;
-                to_sq += __builtin_ctzl(moves);
+                to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
                 move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
                 moves ^= t;
@@ -116,11 +123,12 @@ void Board::pseudo_legal_moves(Move *move_list) {
             square_t to_sq = 0;
             while (moves != 0) {
                 auto t = moves & -moves;
-                to_sq += __builtin_ctzl(moves);
+                to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
                 move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
                 moves ^= t;
             }
         }
     }
+    return move_idx;
 }

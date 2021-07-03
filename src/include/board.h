@@ -10,7 +10,18 @@
 #include "types.h"
 #include "move.h"
 
-void hello();
+extern zh_t StartZH;
+extern zh_t PawnZH[64];
+extern zh_t RookZH[64];
+extern zh_t BishopZH[64];
+extern zh_t KingZH[64];
+extern zh_t WhiteZH[64];
+extern zh_t BlackZH[64];
+extern zh_t ColorZH;
+
+namespace zobrist_hashes {
+    void init();
+}
 
 class Board {
 private:
@@ -36,15 +47,28 @@ public:
 
     Board(std::string fen);
 
+    Board(const Board &b) {
+        pieceBB_[0] = b.pieceBB_[0];
+        pieceBB_[1] = b.pieceBB_[1];
+        pieceBB_[2] = b.pieceBB_[2];
+        pieceBB_[3] = b.pieceBB_[3];
+        pieceBB_[4] = b.pieceBB_[4];
+        pieceBB_[5] = b.pieceBB_[5];
+        pieceBB_[6] = b.pieceBB_[6];
+        color_ = b.color_;
+    };
+
     void print();
 
     void legal_moves(Move *move_list);
 
-    void pseudo_legal_moves(Move *move_list);
+    int pseudo_legal_moves(Move *move_list);
 
-    void make_move(Move move);
+    zh_t zobrist(Move move);
 
-    void unmake_move(Move move);
+    bool make_move(Move move);
+
+    bool unmake_move(Move move);
 
     bitboard_t get_pieces() { return pieceBB_[nWhite] | pieceBB_[nBlack]; }
 
@@ -70,6 +94,8 @@ public:
     bool can_castle_ooo() {return castle_ooo_; }
 
     bool is_attacked(square_t sq);
+
+    bool is_in_check(Color color);
 
     char get_piece(bitboard_t sq, Color cl) {
         if (!sq & get_pieces(cl)) { return ' '; }
