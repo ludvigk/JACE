@@ -1,19 +1,20 @@
-#include <iostream>
-#include <ctype.h>
-#include <cstdlib>
-#include <string>
-#include <sstream>
-
 #include "board.h"
+
+#include <ctype.h>
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
-void hello(){
+void hello() {
     cerr << "Hello, World!" << endl;
 }
 
-Board::Board(){
-    zobristHash_ = 0; // TODO FIX
+Board::Board() {
+    zobristHash_ = 0;  // TODO FIX
 
     color_ = WHITE;
 
@@ -42,33 +43,28 @@ Board::Board(){
     pieceBB_[nBishop] |= (1ULL << 3) | (1ULL << 59);
 }
 
-void Board::print(){
+void Board::print() {
     cerr << endl << "--------" << endl;
     for (int i = 7; i >= 0; i--) {
         for (int j = 0; j < 8; j++) {
             char out = ' ';
             uint64_t k = 1ULL << (i * 8 + j);
 
-            if (pieceBB_[nPawn] & k){
+            if (pieceBB_[nPawn] & k & (pieceBB_[nWhite] | pieceBB_[nBlack])) {
                 out = 'P';
-            }
-            else if (pieceBB_[nKnight] & k){
+            } else if (pieceBB_[nKnight] & k) {
                 out = 'N';
-            }
-            else if (pieceBB_[nKing] & k){
+            } else if (pieceBB_[nKing] & k) {
                 out = 'K';
-            }
-            else if (pieceBB_[nBishop] & ~pieceBB_[nRook] & k){
+            } else if (pieceBB_[nBishop] & ~pieceBB_[nRook] & k) {
                 out = 'B';
-            }
-            else if (~pieceBB_[nBishop] & pieceBB_[nRook] & k){
+            } else if (~pieceBB_[nBishop] & pieceBB_[nRook] & k) {
                 out = 'R';
-            }
-            else if (pieceBB_[nBishop] & pieceBB_[nRook] & k){
+            } else if (pieceBB_[nBishop] & pieceBB_[nRook] & k) {
                 out = 'Q';
             }
 
-            if (pieceBB_[nBlack] & k){
+            if (pieceBB_[nBlack] & k) {
                 out = tolower(out);
             }
 
@@ -79,8 +75,8 @@ void Board::print(){
     cerr << "--------" << endl << endl;
 }
 
-Board::Board(string fen){
-    zobristHash_ = 0; // TODO FIX
+Board::Board(string fen) {
+    zobristHash_ = 0;  // TODO FIX
 
     cerr << "FEN: " << fen << endl;
 
@@ -102,16 +98,14 @@ Board::Board(string fen){
     int file = 0;
     int idx;
 
-
     for (auto i = 0; i < tmp.size(); i++) {
         auto c = tolower(tmp[i]);
 
-        if (c == '/'){
+        if (c == '/') {
             rank -= 1;
             file = 0;
             continue;
-        }
-        else if (isdigit(c)){
+        } else if (isdigit(c)) {
             file += c - '0';
             continue;
         }
@@ -120,26 +114,20 @@ Board::Board(string fen){
 
         pieceBB_[(c != tmp[i]) ? nWhite : nBlack] |= 1ULL << idx;
 
-        if (c == 'r'){
+        if (c == 'r') {
             pieceBB_[nRook] |= 1ULL << idx;
-        }
-        else if (c == 'n'){
+        } else if (c == 'n') {
             pieceBB_[nKnight] |= 1ULL << idx;
-        }
-        else if (c == 'b'){
+        } else if (c == 'b') {
             pieceBB_[nBishop] |= 1ULL << idx;
-        }
-        else if (c == 'q'){
+        } else if (c == 'q') {
             pieceBB_[nRook] |= 1ULL << idx;
             pieceBB_[nBishop] |= 1ULL << idx;
-        }
-        else if (c == 'k'){
+        } else if (c == 'k') {
             pieceBB_[nKing] |= 1ULL << idx;
-        }
-        else if (c == 'p'){
+        } else if (c == 'p') {
             pieceBB_[nPawn] |= 1ULL << idx;
-        }
-        else {
+        } else {
             cerr << "Unknown piece: " << tmp[i] << endl << flush;
             abort();
         }
@@ -148,13 +136,11 @@ Board::Board(string fen){
     }
 
     ss >> tmp;
-    if (tmp == "w"){
+    if (tmp == "w") {
         color_ = WHITE;
-    }
-    else if (tmp == "b"){
+    } else if (tmp == "b") {
         color_ = BLACK;
-    }
-    else {
+    } else {
         cerr << "Invalid color: " << tmp << endl << flush;
         abort();
     }
@@ -165,36 +151,38 @@ Board::Board(string fen){
     castle_ooo_[BLACK] = false;
 
     ss >> tmp;
-    if (tmp == "-"){
+    if (tmp == "-") {
         // do nothing
-    }
-    else {
+    } else {
         for (auto i = 0; i < tmp.size(); i++) {
             auto c = tmp[i];
-            if (c == 'K'){
+            if (c == 'K') {
                 castle_oo_[WHITE] = true;
-            }
-            else if (c == 'Q'){
+            } else if (c == 'Q') {
                 castle_ooo_[WHITE] = true;
-            }
-            else if (c == 'k'){
+            } else if (c == 'k') {
                 castle_oo_[BLACK] = true;
-            }
-            else if (c == 'q'){
+            } else if (c == 'q') {
                 castle_ooo_[BLACK] = true;
-            }
-            else {
+            } else {
                 cerr << "Invalid castling: " << tmp << endl << flush;
                 abort();
             }
         }
     }
 
-    // TODO parse enpassant
     ss >> tmp;
     if (tmp != "-") {
-        cerr << "No support for en passant target square: " << tmp << endl << flush;
-        abort();
+        const char column = tmp[0];
+        const char row = tmp[1];
+
+        file = column - 'a';
+        rank = row - '2';
+        if (rank != 0) {
+            rank = 7;
+        }
+        idx = rank * 8 + file;
+        pieceBB_[nPawn] |= 1ULL << idx;
     }
 
     ss >> half_moves_;
