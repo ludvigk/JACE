@@ -101,9 +101,9 @@ class Board {
         return pieceBB_[cl] & (pieceBB_[nRook] | pieceBB_[nBishop]);
     }
 
-    bool can_castle_oo() { return castle_oo_; }
+    bool can_castle_oo() { return castle_oo_[color_]; }
 
-    bool can_castle_ooo() { return castle_ooo_; }
+    bool can_castle_ooo() { return castle_ooo_[color_]; }
 
     bool is_attacked(square_t sq);
 

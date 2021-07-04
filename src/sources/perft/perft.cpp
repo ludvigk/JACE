@@ -1,7 +1,7 @@
 #include "perft.h"
 #include <iostream>
 
-int perft(Board board, int ply) {
+int perft(Board& board, int ply) {
     Move moves[256];
     int nodes = 0;
     if (ply == 0) {

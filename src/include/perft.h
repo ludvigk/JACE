@@ -3,6 +3,6 @@
 
 #include "board.h"
 
-int perft(Board board, int ply);
+int perft(Board& board, int ply);
 
 #endif  // JACE_PERFT_H
