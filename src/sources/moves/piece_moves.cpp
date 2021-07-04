@@ -2,6 +2,8 @@
 // Created by ludvig on 27.02.2021.
 //
 
+#include <iostream>
+#include <bitset>
 #include "move.h"
 
 bitboard_t get_rook_moves(square_t sq, bitboard_t occ) {

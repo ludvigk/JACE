@@ -9,9 +9,9 @@
 bool Board::is_attacked(square_t sq){
     if (get_rook_moves(sq, this->get_pieces()) & this->get_rooks(!color_)){return true;}
     if (get_bishop_moves(sq, this->get_pieces()) & this->get_bishops(!color_)){return true;}
-    if (KingM[sq] & this->get_king(color_)){return true;}
+    if (KingM[sq] & this->get_king(!color_)){return true;}
     if (PawnA[color_][sq] & this->get_pawns(!color_)){return true;}
-    if (KnightM[sq] & this->get_knights(color_)){return true;}
+    if (KnightM[sq] & this->get_knights(!color_)){return true;}
     return false;
 }
 
@@ -39,7 +39,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
                 moves ^= t;
             }
-            if (this->can_castle_oo()) {
+            if (this->can_castle_oo(color_)) {
                 auto home_rank = color_ == WHITE ? Rank1M : Rank8M;
                 auto sq1 = __builtin_ctzl(home_rank & FileFM);
                 auto sq2 = __builtin_ctzl(home_rank & FileGM);
@@ -49,7 +49,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                     }
                 }
             }
-            if (this->can_castle_ooo()) {
+            if (this->can_castle_ooo(color_)) {
                 auto home_rank = color_ == WHITE ? Rank1M : Rank8M;
                 auto sq1 = __builtin_ctzl(home_rank & FileBM);
                 auto sq2 = __builtin_ctzl(home_rank & FileCM);
@@ -79,7 +79,8 @@ int Board::pseudo_legal_moves(Move *move_list) {
 
         // Pawns
         if (sqBB & this->get_pawns(color_)) {
-            auto moves = (PawnM[color_][sq] | PawnA[color_][sq] & this->get_pieces(!color_)) & ~this->get_pieces(color_);
+            auto takes = (PawnA[color_][sq] & this->get_pieces(!color_));
+            auto moves = (PawnM[color_][sq] & ~this->get_pieces()) | takes;
             square_t to_sq = 0;
             while (moves != 0) {
                 bitboard_t t = moves & -moves;

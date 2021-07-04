@@ -7,11 +7,11 @@
 bitboard_t sliding_rook_attacks(const square_t sq, const bitboard_t occ) {
     auto rank_ = rank(sq);
     auto file_ = file(sq);
-    bitboard_t moves = 0;
+    bitboard_t moves = 0ULL;
     for (int i = 0; i < 4; i++) {
-        auto to_rank = rank_;
-        auto to_file = file_;
-        while (to_rank < 8 && to_rank >= 0 and to_file < 8 && to_file >= 0) {
+        int to_rank = rank_;
+        int to_file = file_;
+        while (true) {
             switch (i) {
                 case 0:
                     to_rank++;
@@ -26,11 +26,14 @@ bitboard_t sliding_rook_attacks(const square_t sq, const bitboard_t occ) {
                     to_file--;
                     break;
             }
-            bitboard_t move_pos = 1ULL << square(rank_, file_);
+            if (to_rank >= 8 || to_rank < 0 || to_file >= 8 || to_file < 0) {
+                break;
+            }
+            bitboard_t move_pos = 1ULL << square(to_rank, to_file);
+            moves |= move_pos;
             if (move_pos & occ) {
                 break;
             }
-            moves |= move_pos;
         }
     }
     return moves;
@@ -41,9 +44,9 @@ bitboard_t sliding_bishop_attacks(const square_t sq, const bitboard_t occ) {
     auto file_ = file(sq);
     bitboard_t moves = 0;
     for (int i = 0; i < 4; i++) {
-        auto to_rank = rank_;
-        auto to_file = file_;
-        while (to_rank < 8 && to_rank >= 0 and to_file < 8 && to_file >= 0) {
+        int to_rank = rank_;
+        int to_file = file_;
+        while (true) {
             switch (i) {
                 case 0:
                     to_rank++;
@@ -59,14 +62,17 @@ bitboard_t sliding_bishop_attacks(const square_t sq, const bitboard_t occ) {
                     break;
                 case 3:
                     to_file--;
-                    to_file--;
+                    to_rank--;
                     break;
             }
-            bitboard_t move_pos = 1ULL << square(rank_, file_);
+            if (to_rank >= 8 || to_rank < 0 || to_file >= 8 || to_file < 0) {
+                break;
+            }
+            bitboard_t move_pos = 1ULL << square(to_rank, to_file);
+            moves |= move_pos;
             if (move_pos & occ) {
                 break;
             }
-            moves |= move_pos;
         }
     }
     return moves;

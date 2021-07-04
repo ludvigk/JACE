@@ -5,7 +5,7 @@
 #include "perft.h"
 #include <iostream>
 
-int perft(Board board, int ply) {
+int perft(Board &board, int ply) {
     Move moves[256];
     int nodes = 0 ;
     if (ply == 0) { return 1; }
@@ -14,6 +14,8 @@ int perft(Board board, int ply) {
         bool legal = board.make_move(moves[mv]);
         if (legal) {
             nodes += perft(board, ply - 1);
+            std::cout << "From: " << moves[mv].from_ << " to: " << moves[mv].to_ << std::endl;
+//            board.print();
         }
         board.unmake_move(moves[mv]);
     }
