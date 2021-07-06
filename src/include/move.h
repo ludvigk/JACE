@@ -5,6 +5,7 @@
 #ifndef JACE_MOVE_H
 #define JACE_MOVE_H
 
+#include <array>
 #include "types.h"
 #include "bitboard.h"
 
@@ -39,6 +40,9 @@ struct Move {
     bool enpassent_;
     char promote_;
     char capture_;
+    bitboard_t pawns;
+    std::array<bool,2> castle_oo_;
+    std::array<bool,2> castle_ooo_;
 };
 
 bitboard_t sliding_rook_attacks(const int sq, const bitboard_t occ);

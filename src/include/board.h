@@ -30,8 +30,8 @@ private:
     Color color_;
     int half_moves_;
     int full_moves_;
-    bool castle_oo_[2];
-    bool castle_ooo_[2];
+    std::array<bool,2> castle_oo_;
+    std::array<bool,2> castle_ooo_;
 public:
     enum enumPiece {
         nWhite,
@@ -79,6 +79,9 @@ public:
     bitboard_t get_enpassent() { return Up(Up(pieceBB_[nPawn] & Rank1M)) |
                                         Down(Down(pieceBB_[nPawn] & Rank8M));  }
 
+    bitboard_t get_enpassent(Color cl) { return cl == WHITE ? Up(Up(pieceBB_[nPawn] & Rank1M)) :
+                                        Down(Down(pieceBB_[nPawn] & Rank8M));  }
+
     bitboard_t get_knights(Color cl) { return pieceBB_[cl] & pieceBB_[nKnight]; }
 
     bitboard_t get_bishops(Color cl) { return pieceBB_[cl] & pieceBB_[nBishop]; }
@@ -89,9 +92,9 @@ public:
 
     bitboard_t get_queens(Color cl) { return pieceBB_[cl] & (pieceBB_[nRook] & pieceBB_[nBishop]); }
 
-    bool can_castle_oo(Color color) {return castle_oo_[color]; }
+    bool can_castle_oo(Color cl) {return castle_oo_[cl]; }
 
-    bool can_castle_ooo(Color color) {return castle_ooo_[color]; }
+    bool can_castle_ooo(Color cl) {return castle_ooo_[cl]; }
 
     bool is_attacked(square_t sq);
 

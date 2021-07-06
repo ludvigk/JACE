@@ -50,7 +50,7 @@ void Board::print() {
             char out = ' ';
             uint64_t k = 1ULL << (i * 8 + j);
 
-            if (pieceBB_[nPawn] & k & (pieceBB_[nWhite] | pieceBB_[nBlack])) {
+            if (pieceBB_[nPawn] & ~Rank1M & ~Rank8M & k & (pieceBB_[nWhite] | pieceBB_[nBlack])) {
                 out = 'P';
             } else if (pieceBB_[nKnight] & k) {
                 out = 'N';

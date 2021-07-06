@@ -2,6 +2,8 @@
 // Created by ludvig on 27.02.2021.
 //
 
+#include <iostream>
+#include <bitset>
 #include "board.h"
 
 bool Board::make_move(Move &move) {
@@ -55,15 +57,28 @@ bool Board::make_move(Move &move) {
             break;
     }
 
-    if (move.enpassent_ && color_ == WHITE) {
+    if (move.enpassent_ && (color_ == WHITE)) {
         pieceBB_[nPawn] &= ~bb(move.to_-8);
-    } else if (move.enpassent_ && color_ == BLACK) {
+        pieceBB_[!color_] &= ~bb(move.to_-8);
+    } else if (move.enpassent_ && (color_ == BLACK)) {
         pieceBB_[nPawn] &= ~bb(move.to_+8);
+        pieceBB_[!color_] &= ~bb(move.to_+8);
+        this->print();
     }
 
     if (pieceBB_[nRook] & bb(move.from_)) {
         pieceBB_[nRook] &= ~bb(move.from_);
         pieceBB_[nRook] |= bb(move.to_);
+        if (((move.from_ == 0) && (color_ == WHITE)) || ((move.from_ == 56) && (color_ == BLACK))) {
+            castle_ooo_[color_] = false;
+        } else if (((move.from_ == 7) && (color_ == WHITE)) || ((move.from_ == 63) && (color_ == BLACK))) {
+            castle_oo_[color_] = false;
+        }
+        if (((move.to_ == 0) && (color_ == WHITE)) || ((move.to_ == 56) && (color_ == BLACK))) {
+            castle_ooo_[color_] = false;
+        } else if (((move.to_ == 7) && (color_ == WHITE)) || ((move.to_ == 63) && (color_ == BLACK))) {
+            castle_oo_[color_] = false;
+        }
     }
     if (pieceBB_[nBishop] & bb(move.from_)) {
         pieceBB_[nBishop] &= ~bb(move.from_);
@@ -72,6 +87,8 @@ bool Board::make_move(Move &move) {
     if (pieceBB_[nKing] & bb(move.from_)) {
         pieceBB_[nKing] &= ~bb(move.from_);
         pieceBB_[nKing] |= bb(move.to_);
+        castle_oo_[color_] = false;
+        castle_ooo_[color_] = false;
         // Castling
         if (move.from_ == 4 && move.to_ == 6) {
             pieceBB_[nRook] &= ~bb(7);
@@ -91,9 +108,16 @@ bool Board::make_move(Move &move) {
         pieceBB_[nKnight] &= ~bb(move.from_);
         pieceBB_[nKnight] |= bb(move.to_);
     }
-    if (pieceBB_[nPawn] & bb(move.from_)) {
+    if (this->get_pawns(color_) & bb(move.from_)) {
         pieceBB_[nPawn] &= ~bb(move.from_);
         pieceBB_[nPawn] |= bb(move.to_);
+        pieceBB_[color_] |= bb(move.to_);
+        if ((bb(move.to_) & Rank4M) && (bb(move.from_) & Rank2M)) {
+            pieceBB_[nPawn] |= bb(move.from_ - 8);
+        }
+        if ((bb(move.to_) & Rank5M) && (bb(move.from_) & Rank7M)) {
+            pieceBB_[nPawn] |= bb(move.from_ + 8);
+        }
     }
 
     pieceBB_[color_] &= ~bb(move.from_);
@@ -102,6 +126,7 @@ bool Board::make_move(Move &move) {
 
     bool legal = !is_in_check(color_);
     color_ = !color_;
+//    this->print();
     return legal;
 }
 
@@ -110,10 +135,13 @@ bool Board::unmake_move(Move &move) {
     color_ = !color_;
 
     // TODO: Zobrist hash
-    if (move.enpassent_ && color_ == WHITE) {
+    if (move.enpassent_ && (color_ == WHITE)) {
         pieceBB_[nPawn] |= bb(move.to_-8);
-    } else if (move.enpassent_ && color_ == BLACK) {
+        pieceBB_[!color_] |= bb(move.to_-8);
+
+    } else if (move.enpassent_ && (color_ == BLACK)) {
         pieceBB_[nPawn] |= bb(move.to_+8);
+        pieceBB_[!color_] |= bb(move.to_+8);
     }
 
     switch (move.promote_) {
@@ -198,6 +226,15 @@ bool Board::unmake_move(Move &move) {
         default:
             break;
     }
+    pieceBB_[nPawn] = move.pawns;
+//    std::copy_n(move.castle_oo_, 2, this->castle_oo_);
+//    std::copy_n(move.castle_ooo_, 2, this->castle_ooo_);
+//    *castle_oo_ = *move.castle_oo_;
+//    *castle_ooo_ = *move.castle_ooo_;
+    castle_oo_[0] = move.castle_oo_[0];
+    castle_oo_[1] = move.castle_oo_[1];
+    castle_ooo_[0] = move.castle_ooo_[0];
+    castle_ooo_[1] = move.castle_ooo_[1];
 
     pieceBB_[color_] &= ~bb(move.to_);
     pieceBB_[color_] |= bb(move.from_);

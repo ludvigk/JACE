@@ -21,6 +21,15 @@ bool Board::is_in_check(Color color){
 }
 
 int Board::pseudo_legal_moves(Move *move_list) {
+    std::array<bool, 2> castle_oo;
+    std::array<bool, 2> castle_ooo;
+//    std::copy_n(castle_oo_, 2, castle_oo);
+//    std::copy_n(castle_ooo_, 2, castle_ooo);
+    castle_oo[0] = castle_oo_[0];
+    castle_oo[1] = castle_oo_[1];
+    castle_ooo[0] = castle_ooo_[0];
+    castle_ooo[1] = castle_ooo_[1];
+
     int move_idx = 0;
     for (square_t sq = A1; sq <= H8; sq++) {
         bitboard_t sqBB = 1ULL << sq;
@@ -36,7 +45,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 auto t = moves & -moves;
                 to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
-                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
+                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture, pieceBB_[nPawn], castle_oo, castle_ooo};
                 moves ^= t;
             }
             if (this->can_castle_oo(color_)) {
@@ -45,7 +54,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 auto sq2 = __builtin_ctzl(home_rank & FileGM);
                 if (!((SquareM[sq1] | SquareM[sq2]) & this->get_pieces())){
                     if (!is_attacked(sq) && !is_attacked(sq1) && !is_attacked(sq2)){
-                        move_list[move_idx++] = Move {sq, sq2, false, ' ', ' '};
+                        move_list[move_idx++] = Move {sq, sq2, false, ' ', ' ', pieceBB_[nPawn], castle_oo, castle_ooo};
                     }
                 }
             }
@@ -56,7 +65,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 auto sq3 = __builtin_ctzl(home_rank & FileDM);
                 if (!((SquareM[sq1] | SquareM[sq2] | SquareM[sq3]) & this->get_pieces())){
                     if (!is_attacked(sq2) && !is_attacked(sq3) && !is_attacked(sq)){
-                        move_list[move_idx++] = Move {sq, sq2, false, ' ', ' '};
+                        move_list[move_idx++] = Move {sq, sq2, false, ' ', ' ', pieceBB_[nPawn], castle_oo, castle_ooo};
                     }
                 }
             }
@@ -71,7 +80,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 auto t = moves & -moves;
                 to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
-                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
+                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture, pieceBB_[nPawn], castle_oo, castle_ooo};
                 moves ^= t;
             }
             continue;
@@ -79,7 +88,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
 
         // Pawns
         if (sqBB & this->get_pawns(color_)) {
-            auto takes = (PawnA[color_][sq] & this->get_pieces(!color_));
+            auto takes = (PawnA[color_][sq] & (this->get_pieces(!color_) | this->get_enpassent()));
             auto moves = (PawnM[color_][sq] & ~this->get_pieces()) | takes;
             square_t to_sq = 0;
             while (moves != 0) {
@@ -89,19 +98,23 @@ int Board::pseudo_legal_moves(Move *move_list) {
 
                 bitboard_t to_sqBB = 1ULL << to_sq;
                 if (get_enpassent() & to_sqBB) {
-                    char capture = this->get_piece(Backward(to_sqBB, color_), !color_);
-                    move_list[move_idx++] = Move {sq, to_sq, true, ' ', capture};
+                    if (color_ == WHITE && get_enpassent() & Rank3M) { continue; }
+                    if (color_ == BLACK && get_enpassent() & Rank6M) { continue; }
+                    move_list[move_idx++] = Move {sq, to_sq, true, ' ', ' ', pieceBB_[nPawn], castle_oo, castle_ooo};
                     continue;
                 }
+
+                if ((to_sqBB & Rank4M) && (sqBB & Rank2M) && (this->get_pieces() & (to_sqBB >> 8))) { continue; }
+                if ((to_sqBB & Rank5M) && (sqBB & Rank7M) && (this->get_pieces() & (to_sqBB << 8))) { continue; }
                 if (to_sqBB & (Rank1M | Rank8M)) {
                     for (char promotion : {'Q', 'N', 'R', 'B'}) {
                         char capture = this->get_piece(1ULL << to_sq, !color_);
-                        move_list[move_idx++] = Move {sq, to_sq, false, promotion, capture};
+                        move_list[move_idx++] = Move{sq, to_sq, false, promotion, capture, pieceBB_[nPawn], castle_oo, castle_ooo};
                     }
                     continue;
                 }
                 char capture = this->get_piece(1ULL << to_sq, !color_);
-                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
+                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture, pieceBB_[nPawn], castle_oo, castle_ooo};
             }
         }
 
@@ -113,7 +126,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 auto t = moves & -moves;
                 to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
-                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
+                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture, pieceBB_[nPawn], castle_oo, castle_ooo};
                 moves ^= t;
             }
         }
@@ -126,7 +139,7 @@ int Board::pseudo_legal_moves(Move *move_list) {
                 auto t = moves & -moves;
                 to_sq = __builtin_ctzl(moves);
                 char capture = this->get_piece(1ULL << to_sq, !color_);
-                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture};
+                move_list[move_idx++] = Move {sq, to_sq, false, ' ', capture, pieceBB_[nPawn], castle_oo, castle_ooo};
                 moves ^= t;
             }
         }
