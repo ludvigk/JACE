@@ -13,9 +13,9 @@ TEST_CASE("Starting position") {
     // REQUIRE(perft(board, 1) == 20);
     // REQUIRE(perft(board, 2) == 400);
     // REQUIRE(perft(board, 3) == 8902);
-    // REQUIRE(perft(board, 4) == 197281);
+     REQUIRE(perft(board, 4) == 197281);
     // REQUIRE(perft(board, 5) == 4865609);
-    REQUIRE(perft(board, 6) == 119060324);
+//    REQUIRE(perft(board, 6) == 119060324);
     // REQUIRE(perft(board, 7) == 3195901860);
 }
 
@@ -34,10 +34,10 @@ TEST_CASE("Position 3") {
     // REQUIRE(perft(board, 1) == 14);
     // REQUIRE(perft(board, 2) == 191);
     // REQUIRE(perft(board, 3) == 2812);
-    // REQUIRE(perft(board, 4) == 43238);
+     REQUIRE(perft(board, 4) == 43238);
     // REQUIRE(perft(board, 5) == 674624);
     // REQUIRE(perft(board, 6) == 11030083);
-    REQUIRE(perft(board, 7) == 178633661);
+//    REQUIRE(perft(board, 7) == 178633661);
     // REQUIRE(perft(board, 8) == 3009794393);
 }
 
