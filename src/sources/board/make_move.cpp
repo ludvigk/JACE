@@ -185,15 +185,23 @@ bool Board::unmake_move(Move &move) {
         if (move.from_ == 4 && move.to_ == 6) {
             pieceBB_[nRook] |= bb(7);
             pieceBB_[nRook] &= ~bb(5);
+            pieceBB_[color_] |= bb(7);
+            pieceBB_[color_] &= ~bb(5);
         } else if (move.from_ == 4 && move.to_ == 2) {
             pieceBB_[nRook] |= bb(0);
             pieceBB_[nRook] &= ~bb(3);
+            pieceBB_[color_] |= bb(0);
+            pieceBB_[color_] &= ~bb(3);
         } else if (move.from_ == 60 && move.to_ == 62) {
             pieceBB_[nRook] |= bb(63);
             pieceBB_[nRook] &= ~bb(61);
+            pieceBB_[color_] |= bb(63);
+            pieceBB_[color_] &= ~bb(61);
         } else if (move.from_ == 60 && move.to_ == 58) {
             pieceBB_[nRook] |= bb(56);
             pieceBB_[nRook] &= ~bb(59);
+            pieceBB_[color_] |= bb(56);
+            pieceBB_[color_] &= ~bb(59);
         }
     }
     if (pieceBB_[nKnight] & bb(move.to_)) {
