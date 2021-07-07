@@ -29,33 +29,17 @@ bool Board::make_move(Move &move) {
             break;
     }
 
+    if (((move.to_ == 0) && (color_ == BLACK)) || ((move.to_ == 56) && (color_ == WHITE))) {
+        castle_ooo_[!color_] = false;
+    } else if (((move.to_ == 7) && (color_ == BLACK)) || ((move.to_ == 63) && (color_ == WHITE))) {
+        castle_oo_[!color_] = false;
+    }
+
     pieceBB_[nRook] &= ~bb(move.to_);
     pieceBB_[nBishop] &= ~bb(move.to_);
     pieceBB_[nKing] &= ~bb(move.to_);
     pieceBB_[nKnight] &= ~bb(move.to_);
     pieceBB_[nPawn] &= ~bb(move.to_);
-
-    switch (move.promote_) {
-        case 'Q':
-            pieceBB_[nRook] |= bb(move.to_);
-            pieceBB_[nBishop] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
-            break;
-        case 'R':
-            pieceBB_[nRook] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
-            break;
-        case 'B':
-            pieceBB_[nBishop] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
-            break;
-        case 'N':
-            pieceBB_[nKnight] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
-            break;
-        default:
-            break;
-    }
 
     if (move.enpassent_ && (color_ == WHITE)) {
         pieceBB_[nPawn] &= ~bb(move.to_-8);
@@ -126,6 +110,28 @@ bool Board::make_move(Move &move) {
         if ((bb(move.to_) & Rank5M) && (bb(move.from_) & Rank7M)) {
             pieceBB_[nPawn] |= bb(move.from_ + 8);
         }
+    }
+
+    switch (move.promote_) {
+        case 'Q':
+            pieceBB_[nRook] |= bb(move.to_);
+            pieceBB_[nBishop] |= bb(move.to_);
+            pieceBB_[nPawn] &= ~bb(move.to_);
+            break;
+        case 'R':
+            pieceBB_[nRook] |= bb(move.to_);
+            pieceBB_[nPawn] &= ~bb(move.to_);
+            break;
+        case 'B':
+            pieceBB_[nBishop] |= bb(move.to_);
+            pieceBB_[nPawn] &= ~bb(move.to_);
+            break;
+        case 'N':
+            pieceBB_[nKnight] |= bb(move.to_);
+            pieceBB_[nPawn] &= ~bb(move.to_);
+            break;
+        default:
+            break;
     }
 
     pieceBB_[color_] &= ~bb(move.from_);
