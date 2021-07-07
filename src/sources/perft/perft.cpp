@@ -8,7 +8,6 @@ int perft(Board& board, int ply) {
         return 1;
     }
     int num_moves = board.pseudo_legal_moves(moves);
-    Board original = board;
     for (int mv = 0; mv < num_moves; mv++) {
         bool legal = board.make_move(moves[mv]);
         if (legal) {
@@ -16,8 +15,7 @@ int perft(Board& board, int ply) {
             // std::cout << "From: " << moves[mv].from_ << " to: " << moves[mv].to_ << std::endl;
             //            board.print();
         }
-        // board.unmake_move(moves[mv]);
-        board = original;
+         board.unmake_move(moves[mv]);
     }
     return nodes;
 }

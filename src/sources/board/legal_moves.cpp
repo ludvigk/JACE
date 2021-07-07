@@ -6,12 +6,12 @@
 #include <bitset>
 #include "board.h"
 
-bool Board::is_attacked(square_t sq){
-    if (get_rook_moves(sq, this->get_pieces()) & this->get_rooks(!color_)){return true;}
-    if (get_bishop_moves(sq, this->get_pieces()) & this->get_bishops(!color_)){return true;}
+bool Board::is_attacked(square_t sq) {
     if (KingM[sq] & this->get_king(!color_)){return true;}
     if (PawnA[color_][sq] & this->get_pawns(!color_)){return true;}
     if (KnightM[sq] & this->get_knights(!color_)){return true;}
+    if (get_rook_moves(sq, this->get_pieces()) & this->get_rooks(!color_)){return true;}
+    if (get_bishop_moves(sq, this->get_pieces()) & this->get_bishops(!color_)){return true;}
     return false;
 }
 

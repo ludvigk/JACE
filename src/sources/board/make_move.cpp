@@ -8,7 +8,10 @@
 
 bool Board::make_move(Move &move) {
 
-    // En pessent
+    bitboard_t move_toBB = SquareM[move.to_];
+    bitboard_t move_fromBB = SquareM[move.from_];
+
+    // En passant
     pieceBB_[nPawn] &= ~(Rank1M | Rank8M);
 
     // TODO: Zobrist hash
@@ -35,11 +38,11 @@ bool Board::make_move(Move &move) {
         castle_oo_[!color_] = false;
     }
 
-    pieceBB_[nRook] &= ~bb(move.to_);
-    pieceBB_[nBishop] &= ~bb(move.to_);
-    pieceBB_[nKing] &= ~bb(move.to_);
-    pieceBB_[nKnight] &= ~bb(move.to_);
-    pieceBB_[nPawn] &= ~bb(move.to_);
+    pieceBB_[nRook] &= ~move_toBB;
+    pieceBB_[nBishop] &= ~move_toBB;
+    pieceBB_[nKing] &= ~move_toBB;
+    pieceBB_[nKnight] &= ~move_toBB;
+    pieceBB_[nPawn] &= ~move_toBB;
 
     if (move.enpassent_ && (color_ == WHITE)) {
         pieceBB_[nPawn] &= ~bb(move.to_-8);
@@ -50,9 +53,9 @@ bool Board::make_move(Move &move) {
         // this->print();
     }
 
-    if (pieceBB_[nRook] & bb(move.from_)) {
-        pieceBB_[nRook] &= ~bb(move.from_);
-        pieceBB_[nRook] |= bb(move.to_);
+    if (pieceBB_[nRook] & move_fromBB) {
+        pieceBB_[nRook] &= ~move_fromBB;
+        pieceBB_[nRook] |= move_toBB;
         if (((move.from_ == 0) && (color_ == WHITE)) || ((move.from_ == 56) && (color_ == BLACK))) {
             castle_ooo_[color_] = false;
         } else if (((move.from_ == 7) && (color_ == WHITE)) || ((move.from_ == 63) && (color_ == BLACK))) {
@@ -64,13 +67,13 @@ bool Board::make_move(Move &move) {
             castle_oo_[color_] = false;
         }
     }
-    if (pieceBB_[nBishop] & bb(move.from_)) {
-        pieceBB_[nBishop] &= ~bb(move.from_);
-        pieceBB_[nBishop] |= bb(move.to_);
+    if (pieceBB_[nBishop] & move_fromBB) {
+        pieceBB_[nBishop] &= ~move_fromBB;
+        pieceBB_[nBishop] |= move_toBB;
     }
-    if (pieceBB_[nKing] & bb(move.from_)) {
-        pieceBB_[nKing] &= ~bb(move.from_);
-        pieceBB_[nKing] |= bb(move.to_);
+    if (pieceBB_[nKing] & move_fromBB) {
+        pieceBB_[nKing] &= ~move_fromBB;
+        pieceBB_[nKing] |= move_toBB;
         castle_oo_[color_] = false;
         castle_ooo_[color_] = false;
         // Castling
@@ -96,47 +99,47 @@ bool Board::make_move(Move &move) {
             pieceBB_[color_] |= bb(59);
         }
     }
-    if (pieceBB_[nKnight] & bb(move.from_)) {
-        pieceBB_[nKnight] &= ~bb(move.from_);
-        pieceBB_[nKnight] |= bb(move.to_);
+    if (pieceBB_[nKnight] & move_fromBB) {
+        pieceBB_[nKnight] &= ~move_fromBB;
+        pieceBB_[nKnight] |= move_toBB;
     }
-    if (this->get_pawns(color_) & bb(move.from_)) {
-        pieceBB_[nPawn] &= ~bb(move.from_);
-        pieceBB_[nPawn] |= bb(move.to_);
-        pieceBB_[color_] |= bb(move.to_);
-        if ((bb(move.to_) & Rank4M) && (bb(move.from_) & Rank2M)) {
+    if (this->get_pawns(color_) & move_fromBB) {
+        pieceBB_[nPawn] &= ~move_fromBB;
+        pieceBB_[nPawn] |= move_toBB;
+        pieceBB_[color_] |= move_toBB;
+        if ((move_toBB & Rank4M) && (move_fromBB & Rank2M)) {
             pieceBB_[nPawn] |= bb(move.from_ - 8);
         }
-        if ((bb(move.to_) & Rank5M) && (bb(move.from_) & Rank7M)) {
+        if ((move_toBB & Rank5M) && (move_fromBB & Rank7M)) {
             pieceBB_[nPawn] |= bb(move.from_ + 8);
         }
     }
 
     switch (move.promote_) {
         case 'Q':
-            pieceBB_[nRook] |= bb(move.to_);
-            pieceBB_[nBishop] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
+            pieceBB_[nRook] |= move_toBB;
+            pieceBB_[nBishop] |= move_toBB;
+            pieceBB_[nPawn] &= ~move_toBB;
             break;
         case 'R':
-            pieceBB_[nRook] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
+            pieceBB_[nRook] |= move_toBB;
+            pieceBB_[nPawn] &= ~move_toBB;
             break;
         case 'B':
-            pieceBB_[nBishop] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
+            pieceBB_[nBishop] |= move_toBB;
+            pieceBB_[nPawn] &= ~move_toBB;
             break;
         case 'N':
-            pieceBB_[nKnight] |= bb(move.to_);
-            pieceBB_[nPawn] &= ~bb(move.to_);
+            pieceBB_[nKnight] |= move_toBB;
+            pieceBB_[nPawn] &= ~move_toBB;
             break;
         default:
             break;
     }
 
-    pieceBB_[color_] &= ~bb(move.from_);
-    pieceBB_[color_] |= bb(move.to_);
-    pieceBB_[!color_] &= ~bb(move.to_);
+    pieceBB_[color_] &= ~move_fromBB;
+    pieceBB_[color_] |= move_toBB;
+    pieceBB_[!color_] &= ~move_toBB;
 
     bool legal = !is_in_check(color_);
     color_ = !color_;
@@ -146,47 +149,51 @@ bool Board::make_move(Move &move) {
 
 bool Board::unmake_move(Move &move) {
 
+    bitboard_t move_toBB = SquareM[move.to_];
+    bitboard_t move_fromBB = SquareM[move.from_];
+
     color_ = !color_;
 
     // TODO: Zobrist hash
     if (move.enpassent_ && (color_ == WHITE)) {
-        pieceBB_[nPawn] |= bb(move.to_-8);
-        pieceBB_[!color_] |= bb(move.to_-8);
+        pieceBB_[nPawn] |= SquareM[move.to_-8];
+        pieceBB_[!color_] |= SquareM[move.to_-8];
+        pieceBB_[!color_] |= SquareM[move.to_-8];
 
     } else if (move.enpassent_ && (color_ == BLACK)) {
-        pieceBB_[nPawn] |= bb(move.to_+8);
-        pieceBB_[!color_] |= bb(move.to_+8);
+        pieceBB_[nPawn] |= SquareM[move.to_+8];
+        pieceBB_[!color_] |= SquareM[move.to_+8];
     }
 
     switch (move.promote_) {
         case 'Q':
-            pieceBB_[nRook] &= ~bb(move.to_);
-            pieceBB_[nBishop] &= ~bb(move.to_);
+            pieceBB_[nRook] &= ~move_toBB;
+            pieceBB_[nBishop] &= ~move_toBB;
             break;
         case 'R':
-            pieceBB_[nRook] &= ~bb(move.to_);
+            pieceBB_[nRook] &= ~move_toBB;
             break;
         case 'B':
-            pieceBB_[nBishop] &= ~bb(move.to_);
+            pieceBB_[nBishop] &= ~move_toBB;
             break;
         case 'N':
-            pieceBB_[nKnight] &= ~bb(move.to_);
+            pieceBB_[nKnight] &= ~move_toBB;
             break;
         default:
             break;
     }
 
-    if (pieceBB_[nRook] & bb(move.to_)) {
-        pieceBB_[nRook] &= ~bb(move.to_);
-        pieceBB_[nRook] |= bb(move.from_);
+    if (pieceBB_[nRook] & move_toBB) {
+        pieceBB_[nRook] &= ~move_toBB;
+        pieceBB_[nRook] |= move_fromBB;
     }
-    if (pieceBB_[nBishop] & bb(move.to_)) {
-        pieceBB_[nBishop] &= ~bb(move.to_);
-        pieceBB_[nBishop] |= bb(move.from_);
+    if (pieceBB_[nBishop] & move_toBB) {
+        pieceBB_[nBishop] &= ~move_toBB;
+        pieceBB_[nBishop] |= move_fromBB;
     }
-    if (pieceBB_[nKing] & bb(move.to_)) {
-        pieceBB_[nKing] &= ~bb(move.to_);
-        pieceBB_[nKing] |= bb(move.from_);
+    if (pieceBB_[nKing] & move_toBB) {
+        pieceBB_[nKing] &= ~move_toBB;
+        pieceBB_[nKing] |= move_fromBB;
         // Castling
         if (move.from_ == 4 && move.to_ == 6) {
             pieceBB_[nRook] |= bb(7);
@@ -210,40 +217,40 @@ bool Board::unmake_move(Move &move) {
             pieceBB_[color_] &= ~bb(59);
         }
     }
-    if (pieceBB_[nKnight] & bb(move.to_)) {
-        pieceBB_[nKnight] &= ~bb(move.to_);
-        pieceBB_[nKnight] |= bb(move.from_);
+    if (pieceBB_[nKnight] & move_toBB) {
+        pieceBB_[nKnight] &= ~move_toBB;
+        pieceBB_[nKnight] |= move_fromBB;
     }
-    if (pieceBB_[nPawn] & bb(move.to_)) {
-        pieceBB_[nPawn] &= ~bb(move.to_);
-        pieceBB_[nPawn] |= bb(move.from_);
+    if (pieceBB_[nPawn] & move_toBB) {
+        pieceBB_[nPawn] &= ~move_toBB;
+        pieceBB_[nPawn] |= move_fromBB;
     }
 
     switch (move.capture_) {
         case 'P':
-            pieceBB_[nPawn] |= bb(move.to_);
-            pieceBB_[!color_] |= bb(move.to_);
+            pieceBB_[nPawn] |= move_toBB;
+            pieceBB_[!color_] |= move_toBB;
             break;
         case 'B':
-            pieceBB_[!color_] |= bb(move.to_);
-            pieceBB_[nBishop] |= bb(move.to_);
+            pieceBB_[!color_] |= move_toBB;
+            pieceBB_[nBishop] |= move_toBB;
             break;
         case 'N':
-            pieceBB_[!color_] |= bb(move.to_);
-            pieceBB_[nKnight] |= bb(move.to_);
+            pieceBB_[!color_] |= move_toBB;
+            pieceBB_[nKnight] |= move_toBB;
             break;
         case 'R':
-            pieceBB_[!color_] |= bb(move.to_);
-            pieceBB_[nRook] |= bb(move.to_);
+            pieceBB_[!color_] |= move_toBB;
+            pieceBB_[nRook] |= move_toBB;
             break;
         case 'Q':
-            pieceBB_[!color_] |= bb(move.to_);
-            pieceBB_[nRook] |= bb(move.to_);
-            pieceBB_[nBishop] |= bb(move.to_);
+            pieceBB_[!color_] |= move_toBB;
+            pieceBB_[nRook] |= move_toBB;
+            pieceBB_[nBishop] |= move_toBB;
             break;
         case 'K':
-            pieceBB_[!color_] |= bb(move.to_);
-            pieceBB_[nKing] |= bb(move.to_);
+            pieceBB_[!color_] |= move_toBB;
+            pieceBB_[nKing] |= move_toBB;
             break;
         default:
             break;
@@ -258,8 +265,8 @@ bool Board::unmake_move(Move &move) {
     castle_ooo_[0] = move.castle_ooo_[0];
     castle_ooo_[1] = move.castle_ooo_[1];
 
-    pieceBB_[color_] &= ~bb(move.to_);
-    pieceBB_[color_] |= bb(move.from_);
+    pieceBB_[color_] &= ~move_toBB;
+    pieceBB_[color_] |= move_fromBB;
 
     return true;
 }
