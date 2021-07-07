@@ -47,17 +47,6 @@ public:
 
     Board(std::string fen);
 
-    Board(const Board &b) {
-        pieceBB_[0] = b.pieceBB_[0];
-        pieceBB_[1] = b.pieceBB_[1];
-        pieceBB_[2] = b.pieceBB_[2];
-        pieceBB_[3] = b.pieceBB_[3];
-        pieceBB_[4] = b.pieceBB_[4];
-        pieceBB_[5] = b.pieceBB_[5];
-        pieceBB_[6] = b.pieceBB_[6];
-        color_ = b.color_;
-    };
-
     void print();
 
     void legal_moves(Move *move_list);

@@ -63,7 +63,7 @@ bool Board::make_move(Move &move) {
     } else if (move.enpassent_ && (color_ == BLACK)) {
         pieceBB_[nPawn] &= ~bb(move.to_+8);
         pieceBB_[!color_] &= ~bb(move.to_+8);
-        this->print();
+        // this->print();
     }
 
     if (pieceBB_[nRook] & bb(move.from_)) {
