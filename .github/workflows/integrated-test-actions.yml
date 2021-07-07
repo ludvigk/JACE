@@ -1,9 +1,10 @@
 name: test-actions
 on: [push]
 jobs:
-  check-bats-version:
+  perft-tests:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v2
       - run: cmake ./ src
       - run: make
+      - run: ./JACE_tests
