@@ -2,7 +2,7 @@ name: test-actions
 on: [push]
 jobs:
   check-bats-version:
-    runs-on: [self-hosted, pop-os]
+    runs-on: self-hosted
     steps:
       - run: cmake ./ src
       - run: make
