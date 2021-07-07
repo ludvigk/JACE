@@ -177,7 +177,7 @@ Board::Board(string fen) {
         const char row = tmp[1];
 
         file = column - 'a';
-        rank = row - '2';
+        rank = row - '3';
         if (rank != 0) {
             rank = 7;
         }
