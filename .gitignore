@@ -183,4 +183,8 @@ tags
 # Persistent undo
 [._]*.un~
 
+# Compiled binaries
+JACE
+JACE_tests
+
 # End of https://www.toptal.com/developers/gitignore/api/c++,clion,cmake,vim
