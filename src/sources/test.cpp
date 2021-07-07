@@ -66,6 +66,6 @@ TEST_CASE("Position 5") {
     // REQUIRE(perft(board, 1) == 44);
     // REQUIRE(perft(board, 2) == 1486);
 //    REQUIRE(perft(board, 3) == 62379);
-     REQUIRE(perft(board, 4) == 2103487);
+    REQUIRE(perft(board, 4) == 2103487);
     // REQUIRE(perft(board, 5) == 89941194);
 }
