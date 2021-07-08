@@ -21,14 +21,8 @@ bool Board::is_in_check(Color color){
 }
 
 int Board::pseudo_legal_moves(Move *move_list) {
-    std::array<bool, 2> castle_oo;
-    std::array<bool, 2> castle_ooo;
-//    std::copy_n(castle_oo_, 2, castle_oo);
-//    std::copy_n(castle_ooo_, 2, castle_ooo);
-    castle_oo[0] = castle_oo_[0];
-    castle_oo[1] = castle_oo_[1];
-    castle_ooo[0] = castle_ooo_[0];
-    castle_ooo[1] = castle_ooo_[1];
+    std::array<bool, 2> castle_oo = castle_oo_;
+    std::array<bool, 2> castle_ooo = castle_ooo_;
 
     int move_idx = 0;
     for (square_t sq = A1; sq <= H8; sq++) {

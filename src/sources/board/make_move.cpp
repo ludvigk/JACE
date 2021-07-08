@@ -2,8 +2,6 @@
 // Created by ludvig on 27.02.2021.
 //
 
-#include <iostream>
-#include <bitset>
 #include "board.h"
 
 bool Board::make_move(Move &move) {
@@ -54,8 +52,7 @@ bool Board::make_move(Move &move) {
     }
 
     if (pieceBB_[nRook] & move_fromBB) {
-        pieceBB_[nRook] &= ~move_fromBB;
-        pieceBB_[nRook] |= move_toBB;
+        move_piece(move.from_, move.to_, nRook, color_);
         if (((move.from_ == 0) && (color_ == WHITE)) || ((move.from_ == 56) && (color_ == BLACK))) {
             castle_ooo_[color_] = false;
         } else if (((move.from_ == 7) && (color_ == WHITE)) || ((move.from_ == 63) && (color_ == BLACK))) {
@@ -68,40 +65,25 @@ bool Board::make_move(Move &move) {
         }
     }
     if (pieceBB_[nBishop] & move_fromBB) {
-        pieceBB_[nBishop] &= ~move_fromBB;
-        pieceBB_[nBishop] |= move_toBB;
+        move_piece(move.from_, move.to_, nBishop, color_);
     }
     if (pieceBB_[nKing] & move_fromBB) {
-        pieceBB_[nKing] &= ~move_fromBB;
-        pieceBB_[nKing] |= move_toBB;
+        move_piece(move.from_, move.to_, nKing, color_);
         castle_oo_[color_] = false;
         castle_ooo_[color_] = false;
         // Castling
         if (move.from_ == 4 && move.to_ == 6) {
-            pieceBB_[nRook] &= ~bb(7);
-            pieceBB_[nRook] |= bb(5);
-            pieceBB_[color_] &= ~bb(7);
-            pieceBB_[color_] |= bb(5);
+            move_piece(7, 5, nRook, color_);
         } else if (move.from_ == 4 && move.to_ == 2) {
-            pieceBB_[nRook] &= ~bb(0);
-            pieceBB_[nRook] |= bb(3);
-            pieceBB_[color_] &= ~bb(0);
-            pieceBB_[color_] |= bb(3);
+            move_piece(0, 3, nRook, color_);
         } else if (move.from_ == 60 && move.to_ == 62) {
-            pieceBB_[nRook] &= ~bb(63);
-            pieceBB_[nRook] |= bb(61);
-            pieceBB_[color_] &= ~bb(63);
-            pieceBB_[color_] |= bb(61);
+            move_piece(63, 61, nRook, color_);
         } else if (move.from_ == 60 && move.to_ == 58) {
-            pieceBB_[nRook] &= ~bb(56);
-            pieceBB_[nRook] |= bb(59);
-            pieceBB_[color_] &= ~bb(56);
-            pieceBB_[color_] |= bb(59);
+            move_piece(56, 59, nRook, color_);
         }
     }
     if (pieceBB_[nKnight] & move_fromBB) {
-        pieceBB_[nKnight] &= ~move_fromBB;
-        pieceBB_[nKnight] |= move_toBB;
+        move_piece(move.from_, move.to_, nKnight, color_);
     }
     if (this->get_pawns(color_) & move_fromBB) {
         pieceBB_[nPawn] &= ~move_fromBB;
@@ -196,25 +178,13 @@ bool Board::unmake_move(Move &move) {
         pieceBB_[nKing] |= move_fromBB;
         // Castling
         if (move.from_ == 4 && move.to_ == 6) {
-            pieceBB_[nRook] |= bb(7);
-            pieceBB_[nRook] &= ~bb(5);
-            pieceBB_[color_] |= bb(7);
-            pieceBB_[color_] &= ~bb(5);
+            move_piece(5, 7, nRook, color_);
         } else if (move.from_ == 4 && move.to_ == 2) {
-            pieceBB_[nRook] |= bb(0);
-            pieceBB_[nRook] &= ~bb(3);
-            pieceBB_[color_] |= bb(0);
-            pieceBB_[color_] &= ~bb(3);
+            move_piece(3, 0, nRook, color_);
         } else if (move.from_ == 60 && move.to_ == 62) {
-            pieceBB_[nRook] |= bb(63);
-            pieceBB_[nRook] &= ~bb(61);
-            pieceBB_[color_] |= bb(63);
-            pieceBB_[color_] &= ~bb(61);
+            move_piece(61, 63, nRook, color_);
         } else if (move.from_ == 60 && move.to_ == 58) {
-            pieceBB_[nRook] |= bb(56);
-            pieceBB_[nRook] &= ~bb(59);
-            pieceBB_[color_] |= bb(56);
-            pieceBB_[color_] &= ~bb(59);
+            move_piece(59, 56, nRook, color_);
         }
     }
     if (pieceBB_[nKnight] & move_toBB) {
@@ -256,14 +226,8 @@ bool Board::unmake_move(Move &move) {
             break;
     }
     pieceBB_[nPawn] = move.pawns;
-//    std::copy_n(move.castle_oo_, 2, this->castle_oo_);
-//    std::copy_n(move.castle_ooo_, 2, this->castle_ooo_);
-//    *castle_oo_ = *move.castle_oo_;
-//    *castle_ooo_ = *move.castle_ooo_;
-    castle_oo_[0] = move.castle_oo_[0];
-    castle_oo_[1] = move.castle_oo_[1];
-    castle_ooo_[0] = move.castle_ooo_[0];
-    castle_ooo_[1] = move.castle_ooo_[1];
+    castle_oo_ = move.castle_oo_;
+    castle_ooo_ = move.castle_ooo_;
 
     pieceBB_[color_] &= ~move_toBB;
     pieceBB_[color_] |= move_fromBB;

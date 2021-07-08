@@ -55,6 +55,19 @@ public:
 
     zh_t zobrist(Move &move);
 
+    void move_piece(int from, int to, enumPiece piece, Color color) {
+        bitboard_t sqBB_from = SquareM[from];
+        bitboard_t sqBB_to = SquareM[to];
+        pieceBB_[color] &= ~sqBB_from;
+        pieceBB_[color] |= sqBB_to;
+        pieceBB_[piece] &= ~sqBB_from;
+        pieceBB_[piece] |= sqBB_to;
+    };
+
+    void move_piece(int from, int to, enumPiece piece) {
+        return move_piece(from, to, piece, color_);
+    }
+
     bool make_move(Move &move);
 
     bool unmake_move(Move &move);
