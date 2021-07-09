@@ -1,7 +1,3 @@
-//
-// Created by ludvig on 28.02.2021.
-//
-
 #include "board.h"
 
 zh_t StartZH;

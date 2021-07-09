@@ -1,7 +1,3 @@
-//
-// Created by ludvig on 27.02.2021.
-//
-
 #include "move.h"
 
 bitboard_t sliding_rook_attacks(const square_t sq, const bitboard_t occ) {
