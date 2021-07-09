@@ -16,11 +16,23 @@ enum Color {
     BLACK
 };
 
-Color operator!(Color& cl);
+constexpr Color operator!(const Color cl) {
+    return cl == WHITE ? BLACK : WHITE;
+}
 
-int rank(square_t sq);
-int file(square_t sq);
-square_t square(int rank, int file);
-bitboard_t bb(square_t sq);
+constexpr int rank(const square_t sq) {
+    return sq / 8;
+}
+
+constexpr int file(const square_t sq) {
+    return sq % 8;
+}
+
+constexpr square_t square(const int rank, const int file) {
+    return rank * 8 + file;
+}
+constexpr bitboard_t bb(const square_t sq) {
+    return 1ULL << sq;
+}
 
 #endif //JACE_TYPES_H

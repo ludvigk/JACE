@@ -15,16 +15,25 @@ extern bitboard_t PawnM[2][64];
 extern bitboard_t RookA[64][1 << 12];
 extern bitboard_t BishopA[64][1 << 9];
 
-bitboard_t Up(const bitboard_t s);
-bitboard_t Down(const bitboard_t s);
-bitboard_t Left(const bitboard_t s);
-bitboard_t Right(const bitboard_t s);
-bitboard_t UpLeft(const bitboard_t s);
-bitboard_t UpRight(const bitboard_t s);
-bitboard_t DownLeft(const bitboard_t s);
-bitboard_t DownRight(const bitboard_t s);
-bitboard_t Forward(const bitboard_t s, Color cl);
-bitboard_t Backward(const bitboard_t s, Color cl);
+constexpr bitboard_t Up(const bitboard_t s) { return (s & ~Rank8M) << 8; }
+
+constexpr bitboard_t Down(const bitboard_t s) { return (s & ~Rank1M) >> 8; }
+
+constexpr bitboard_t Left(const bitboard_t s) { return (s & ~FileAM) >> 1; }
+
+constexpr bitboard_t Right(const bitboard_t s) { return (s & ~FileHM) << 1; }
+
+constexpr bitboard_t UpLeft(const bitboard_t s) { return Up(Left(s)); }
+
+constexpr bitboard_t UpRight(const bitboard_t s) { return Up(Right(s)); }
+
+constexpr bitboard_t DownLeft(const bitboard_t s) { return Down(Left(s)); }
+
+constexpr bitboard_t DownRight(const bitboard_t s) { return Down(Right(s)); }
+
+constexpr bitboard_t Forward(const bitboard_t s, const Color cl) { return cl == WHITE ? Up(s) : Down(s); }
+
+constexpr bitboard_t Backward(const bitboard_t s, const Color cl) { return Forward(s, !cl); }
 
 namespace Masks {
     void init();
