@@ -1,7 +1,3 @@
-//
-// Created by ludvig on 27.02.2021.
-//
-
 #ifndef JACE_TYPES_H
 #define JACE_TYPES_H
 

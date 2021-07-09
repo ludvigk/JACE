@@ -1,7 +1,3 @@
-//
-// Created by ludvig on 27.02.2021.
-//
-
 #include <iostream>
 #include <bitset>
 #include "board.h"

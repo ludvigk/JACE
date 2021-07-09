@@ -1,7 +1,3 @@
-//
-// Created by ludvig on 7/3/21.
-//
-
 #ifndef JACE_PERFT_H
 #define JACE_PERFT_H
 

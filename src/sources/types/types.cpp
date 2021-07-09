@@ -1,7 +1,3 @@
-//
-// Created by ludvig on 27.02.2021.
-//
-
 #include "types.h"
 
 int rank(square_t sq) { return sq / 8; }
