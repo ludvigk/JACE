@@ -1,9 +1,4 @@
-#define CATCH_CONFIG_RUNNER
+#define CATCH_CONFIG_ENABLE_BENCHMARKING
+#define CATCH_CONFIG_MAIN
 
 #include <catch2/catch.hpp>
-#include "move.h"
-
-int main(int argc, char* argv[]) {
-    Masks::init();
-    return Catch::Session().run(argc, argv);
-}
