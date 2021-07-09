@@ -11,7 +11,7 @@ file(GLOB_RECURSE SOURCES RELATIVE ${PROJECT_SOURCE_DIR} "sources/*/*.cpp")
 
 add_library(JACE_lib STATIC ${SOURCES})
 add_executable(JACE sources/main.cpp)
-add_executable(JACE_tests sources/test.cpp)
+add_executable(JACE_tests sources/test_main.cpp sources/tests.cpp)
 
 set_target_properties(JACE_lib PROPERTIES OUTPUT_NAME JACE)
 
