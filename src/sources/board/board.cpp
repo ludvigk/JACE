@@ -9,10 +9,6 @@
 
 using namespace std;
 
-void hello() {
-    cerr << "Hello, World!" << endl;
-}
-
 Board::Board() {
     zobristHash_ = 0;  // TODO FIX
 
