@@ -9,36 +9,6 @@
 
 using namespace std;
 
-Board::Board() {
-    zobristHash_ = 0;  // TODO FIX
-
-    color_ = WHITE;
-
-    half_moves_ = 0;
-    full_moves_ = 1;
-
-    castle_oo_[WHITE] = true;
-    castle_oo_[BLACK] = true;
-    castle_ooo_[WHITE] = true;
-    castle_ooo_[BLACK] = true;
-
-    pieceBB_[nWhite] = ((1ULL << 16) - 1) << 0;
-    pieceBB_[nBlack] = ((1ULL << 16) - 1) << 48;
-
-    pieceBB_[nPawn] = ((1ULL << 8) - 1) << 8;
-    pieceBB_[nPawn] |= ((1ULL << 8) - 1) << 48;
-
-    pieceBB_[nKnight] = (1ULL << 1) | (1ULL << 6) | (1ULL << 57) | (1ULL << 62);
-
-    pieceBB_[nKing] = (1ULL << 4) | (1ULL << 60);
-
-    pieceBB_[nRook] = (1ULL << 0) | (1ULL << 7) | (1ULL << 56) | (1ULL << 63);
-    pieceBB_[nRook] |= (1ULL << 3) | (1ULL << 59);
-
-    pieceBB_[nBishop] = (1ULL << 2) | (1ULL << 5) | (1ULL << 58) | (1ULL << 61);
-    pieceBB_[nBishop] |= (1ULL << 3) | (1ULL << 59);
-}
-
 void Board::print() {
     cerr << endl << "--------" << endl;
     for (int i = 7; i >= 0; i--) {
